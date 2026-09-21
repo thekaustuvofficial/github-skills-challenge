@@ -6,44 +6,37 @@ on:
       - main
 
 permissions:
-  contents: read
   pull-requests: write
 
 jobs:
-  coverage:
-    name: Run Python coverage
+  python-coverage:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check out repository
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v4
         with:
-          python-version: "3.x"
+          python-version: 3.13
 
-      - name: Install project dependencies
+      - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install -r requirements.txt
+          pip install -r requirements.txt
+          pip install pytest==8.4.1
+          pip install coverage==7.9
+          pip install pytest-cov==6.2.1
 
-      - name: Install testing and coverage tools
-        run: |
-          python -m pip install pytest pytest-cov
+      - name: Run tests and generate coverage details
+        run: pytest --cov=src
 
-      - name: Run tests with coverage
-        run: |
-          python -m pytest -vv \
-            --cov=src \
-            --cov-report=term-missing \
-            --cov-report=xml \
-            --cov-fail-under=50
-
-      - name: Publish coverage comment
-        if: always()
-        uses: py-cov-action/python-coverage-comment-action@v3.1
+      - name: Coverage comment
+        uses: py-cov-action/python-coverage-comment-action@v3
         with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          MINIMUM_GREEN: 50
-          MINIMUM_ORANGE: 40
+          GITHUB_TOKEN: ${{ github.token }}
+          MINIMUM_GREEN: 90
+          MINIMUM_ORANGE: 70
+
+      - name: Fail if below threshold
+        run: coverage report --fail-under=90
