@@ -1,3 +1,4 @@
 matplotlib
 pytest==8.4.1
 # dummy change to show commit message
+# dummy changes to make sure that the coverage is below 50% to test the coverage comment action
