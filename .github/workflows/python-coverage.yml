@@ -42,7 +42,7 @@ jobs:
 
       - name: Publish coverage comment
         if: always()
-        uses: py-cov-action/python-coverage-comment-action@v3.1
+        uses: py-cov-action/python-coverage-comment-action@v3        
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MINIMUM_GREEN: 50
